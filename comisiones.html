@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comisiones por Retraso</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+    }
+    .comision {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-top: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .regresar-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #d20000;
+      padding: 8px 14px;
+      border-radius: 5px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .regresar-btn:hover {
+      background-color: #d20000;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="regresar-btn" onclick="window.location.href='admin-panel.html'">🔙 Regresar</button>
+
+  <h1>💸 Comisiones por Retraso</h1>
+  <div id="listaComisiones"></div>
+  <button onclick="descargarPDF()">📄 Descargar PDF</button>
+
+  <script>
+    const lista = document.getElementById("listaComisiones");
+    const prestamos = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+    const hoy = new Date();
+    const MULTA_POR_DIA = 5;
+
+    const resumen = [];
+
+    prestamos.forEach(libro => {
+      const fechaDev = new Date(libro.devolucion);
+      const diffTime = hoy - fechaDev;
+      const diasRetraso = Math.max(Math.floor(diffTime / (1000 * 60 * 60 * 24)), 0);
+      const deuda = diasRetraso * MULTA_POR_DIA;
+
+      if (diasRetraso > 0) {
+        const div = document.createElement("div");
+        div.className = "comision";
+        div.innerHTML = `
+          <strong>Estudiante:</strong> ${libro.nombre}<br>
+          <strong>Libro:</strong> ${libro.titulo}<br>
+          <strong>Fecha de préstamo:</strong> ${libro.prestamo}<br>
+          <strong>Fecha de devolución:</strong> ${libro.devolucion}<br>
+          <strong>Días de retraso:</strong> ${diasRetraso}<br>
+          <strong>Comisión acumulada:</strong> $${deuda}
+        `;
+        lista.appendChild(div);
+        resumen.push({
+          nombre: libro.nombre,
+          titulo: libro.titulo,
+          prestamo: libro.prestamo,
+          devolucion: libro.devolucion,
+          dias: diasRetraso,
+          deuda
+        });
+      }
+    });
+
+    function descargarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 10;
+      doc.setFontSize(12);
+      doc.text("Resumen de Comisiones por Retraso", 10, y);
+      y += 10;
+
+      if (resumen.length === 0) {
+        doc.text("No hay comisiones por retraso registradas.", 10, y);
+      } else {
+        resumen.forEach((r, index) => {
+          doc.text(`${index + 1}. ${r.nombre} - ${r.titulo}`, 10, y);
+          y += 6;
+          doc.text(`   Prestado: ${r.prestamo}`, 10, y);
+          y += 6;
+          doc.text(`   Fecha devolución: ${r.devolucion}`, 10, y);
+          y += 6;
+          doc.text(`   Días de retraso: ${r.dias}, Comisión: $${r.deuda}`, 10, y);
+          y += 10;
+        });
+      }
+
+      doc.save("comisiones_retraso.pdf");
+    }
+  </script>
+
+</body>
+</html>

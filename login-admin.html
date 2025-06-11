@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Administrador</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #24315e, #4a69bd);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .navbar {
+      width: 100%;
+      background-color: #24315e;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .navbar img {
+      height: 50px;
+    }
+
+    .login-container {
+      background: #fff;
+      margin-top: 50px;
+      padding: 30px 25px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.7s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #24315e;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .input-group i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #aaa;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #24315e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1a2348;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        margin-top: 30px;
+        padding: 25px 20px;
+      }
+    }
+
+  </style>
+  <!-- Íconos FontAwesome -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- Barra superior con logo -->
+  <div class="navbar">
+    <img src="/img/GE_USYC.png" alt="Logo Escuela">
+  </div>
+
+  <!-- Formulario login -->
+  <div class="login-container">
+    <h2>Acceso Administrador</h2>
+    <div class="error" id="errorMsg"></div>
+    <form onsubmit="return login(event)">
+      <div class="input-group">
+        <input type="text" id="usuario" placeholder="Usuario" required>
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="input-group">
+        <input type="password" id="clave" placeholder="Contraseña" required>
+        <i class="fas fa-lock"></i>
+      </div>
+      <button type="submit">Ingresar</button>
+    </form>
+  </div>
+
+  <script>
+    function login(event) {
+      event.preventDefault();
+      const usuario = document.getElementById("usuario").value;
+      const clave = document.getElementById("clave").value;
+      if (usuario === "adminusyc2025" && clave === "usyc2025") {
+        window.location.href = "admin-panel.html";
+      } else {
+        document.getElementById("errorMsg").textContent = "Credenciales incorrectas";
+      }
+    }
+  </script>
+</body>
+</html>

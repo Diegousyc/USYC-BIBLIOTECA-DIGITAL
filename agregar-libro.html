@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agregar Libro</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+    }
+    body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(44, 36, 136, 0.1);
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      text-align: center;
+      margin-bottom: 80px; /* espacio para el footer */
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    input, select, button {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    input:focus, select:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .btn-regresar {
+      background-color: #007bff;
+      margin-top: 10px;
+    }
+    .btn-regresar:hover {
+      background-color: #0056b3;
+    }
+    .mensaje {
+      margin-top: 15px;
+      font-weight: bold;
+      color: green;
+      min-height: 24px;
+    }
+    h2 {
+      margin: 0;
+      font-weight: 700;
+      color: #333;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #24315e;
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    footer img {
+      max-height: 40px;
+      max-width: 150px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Agregar Libro</h2>
+    <form id="formAgregarLibro">
+      <input type="text" id="titulo" name="titulo" placeholder="Nombre del libro" required />
+      <input type="text" id="autor" name="autor" placeholder="Autor" required />
+      <select id="estado" name="estado" required>
+        <option value="">Selecciona estado</option>
+        <option value="Nuevo">Nuevo</option>
+        <option value="Bueno">Bueno</option>
+        <option value="Regular">Regular</option>
+        <option value="Malo">Malo</option>
+      </select>
+      <button type="submit">Agregar Libro</button>
+    </form>
+    <button class="btn-regresar" onclick="history.back()">Regresar</button>
+    <div class="mensaje" id="mensaje"></div>
+  </div>
+
+  <footer>
+    <img src="/img/GE_USYC.png" alt="Logo de la escuela" />
+  </footer>
+
+  <script>
+    const form = document.getElementById("formAgregarLibro");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const titulo = form.titulo.value.trim();
+      const autor = form.autor.value.trim();
+      const estado = form.estado.value;
+
+      if (!titulo || !autor || !estado) {
+        mensaje.textContent = "Por favor, completa todos los campos.";
+        mensaje.style.color = "red";
+        return;
+      }
+
+      const nuevoLibro = { titulo, autor, estado };
+
+      const librosExistentes = JSON.parse(localStorage.getItem("librosDisponibles")) || [];
+      librosExistentes.push(nuevoLibro);
+      localStorage.setItem("librosDisponibles", JSON.stringify(librosExistentes));
+
+      mensaje.textContent = `Libro "${titulo}" agregado correctamente.`;
+      mensaje.style.color = "green";
+
+      form.reset();
+    });
+  </script>
+</body>
+</html>

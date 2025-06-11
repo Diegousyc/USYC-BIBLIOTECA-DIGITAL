@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Préstamo de Libro Escolar</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f1f1f1;
+      margin: 0;
+      padding: 20px;
+    }
+    .admin-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+    .admin-button {
+      background: #28a745;
+      color: #fff;
+      padding: 10px 15px;
+      font-size: 14px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .admin-button:hover { background: #218838; }
+    .main-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;  
+    }
+
+
+
+    form {
+      background: #fff;
+      padding: 20px;
+      max-width: 100%;
+      width: 320px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+    }
+    form h2 { text-align: center; margin-top: 0; }
+    input, select, button[type="submit"] {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button[type="submit"] {
+      background: #24315e;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button[type="submit"]:hover { background: #0056b3; }
+    .mensaje {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      color: green;
+    }
+    .mascota-box {
+      max-width: 100%;
+      width: 320px;
+      height: 420px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .mascota-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .footer-banner {
+      margin-top: 40px;
+      width: 100%;
+      background: #24315e;
+      height: 120px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .footer-banner img {
+      max-height: 80%;
+      max-width: 90%;
+      object-fit: contain;
+    }
+    #cuadroConfirmacion {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    #cuadroConfirmacion .contenido {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+    }
+    #cuadroConfirmacion img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    #cuadroConfirmacion button {
+      padding: 10px 15px;
+      background: #24315e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      form, .mascota-box { width: 100%; }
+      .main-container { gap: 20px; }
+      .admin-button {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+      input, select, button[type="submit"] {
+        font-size: 14px;
+        padding: 8px;
+      }
+      .footer-banner { height: 100px; }
+    }
+  </style>
+</head>
+<body>
+
+ <div class="admin-container">
+  <a href="login-admin.html" class="admin-button">Administrador</a>
+</div>
+
+
+
+
+<div class="main-container">
+  <form id="formularioPrestamo">
+    <h2>Formulario de Préstamo de Libro</h2>
+    <input type="text" name="nombre" placeholder="Nombre completo" required>
+
+    <select id="nivel" name="nivel" required>
+      <option value="">Selecciona nivel educativo</option>
+      <option value="media">Media Superior</option>
+      <option value="superior">Superior</option>
+      <option value="maestria">Maestría</option>
+      <option value="doctorado">Doctorado</option>
+    </select>
+
+    <select name="carrera" id="carrera" required>
+      <option value="">Selecciona tu carrera</option>
+    </select>
+
+    <input type="date" name="prestamo" id="prestamo" required>
+
+    <label for="devolucion">Día de devolución</label>
+    <input type="date" name="devolucion" id="devolucion" readonly required>
+
+    <!-- NUEVOS CAMPOS DE BÚSQUEDA -->
+      <label for="devolucion">Busqueda Rapida por Letra</label>
+    <input type="text" id="buscadorLetra" placeholder="Buscar libro por letra inicial..." style="margin: 10px 0; width: 100%; padding: 8px;">
+     <label for="devolucion">Busqueda Rapida por Titulo </label>
+    <input type="text" id="buscadorTitulo" placeholder="Buscar libro por título..." style="margin-bottom: 10px; width: 100%; padding: 8px;">
+
+    <!-- SELECT DE LIBROS -->
+    <select id="titulo" name="titulo" required>
+      <option value="">Selecciona un libro</option>
+    </select>
+
+    <div id="estadoLibro" style="margin-top: 10px; font-weight: bold;"></div>
+
+    <button type="submit">Guardar</button>
+  </form>
+
+  <div class="mascota-box">
+    <img src="/img/mascota.png" alt="Mascota de la escuela">
+  </div>
+</div>
+
+<div class="mensaje" id="mensaje"></div>
+
+<div class="footer-banner" style="text-align: center; padding: 20px;">
+  <img src="/img/GE_USYC.png" alt="Logo de la escuela" style="max-width: 150px; display: block; margin: 0 auto;">
+  <p style="margin-top: 10px; font-weight: bold; color: #d5d5d5;">
+    Sitio desarrollado por Diego Systems
+  </p>
+  <p style="font-size: 14px; color: #d7d7d7;">
+    © 2025 Universidad USYC. Todos los derechos reservados.
+  </p>
+</div>
+
+<!-- Cuadro de confirmación -->
+<div id="cuadroConfirmacion" style="display: none;">
+  <div class="contenido">
+    <h3>Gracias por tu registro</h3>
+    <p>Toma captura</p>
+    <p id="fechaDevolucionTexto" style="font-weight: bold;"></p>
+    <p id="estadoLibroTexto" style="font-weight: bold;"></p>
+    <img src="/img/registro_correcto.png" alt="Escuela">
+    <p style="margin-top: 10px; color: rgb(0, 0, 0); font-weight: bold;">
+      Recuerda que tienes un tiempo de entrega , en dado caso de no entregar a tiempo
+      tendra una comison por no entregar en tiempo y forma.
+    </p>
+    <p style="margin-top: 10px; color: red; font-weight: bold;">
+      Favor de ir a control escolar a revisar tu registro
+    </p>
+    <button onclick="cerrarConfirmacion()">Nuevo registro</button>
+  </div>
+</div>
+
+<script src="libros.js"></script>
+<script>
+  const nivelSelect = document.getElementById("nivel");
+  const carreraSelect = document.getElementById("carrera");
+  const prestamoInput = document.getElementById("prestamo");
+  const devolucionInput = document.getElementById("devolucion");
+  const estadoLibroDiv = document.getElementById("estadoLibro");
+  const selectTitulo = document.getElementById("titulo");
+
+  // Función para actualizar opciones del select según filtros
+  function actualizarOpcionesLibros(filtroLetra = "", filtroTexto = "") {
+    selectTitulo.innerHTML = '<option value="">Selecciona un libro</option>';
+    libros.forEach(libro => {
+      const titulo = libro.titulo.toLowerCase();
+      const coincideLetra = filtroLetra === "" || titulo.startsWith(filtroLetra.toLowerCase());
+      const coincideTexto = filtroTexto === "" || titulo.includes(filtroTexto.toLowerCase());
+
+      if (coincideLetra && coincideTexto) {
+        const option = document.createElement("option");
+        option.value = libro.titulo;
+        option.textContent = libro.titulo;
+        selectTitulo.appendChild(option);
+      }
+    });
+  }
+
+  // Inicialización del select con todos los libros
+  actualizarOpcionesLibros();
+
+  // Eventos para campos de búsqueda
+  document.getElementById("buscadorLetra").addEventListener("input", () => {
+    const letra = document.getElementById("buscadorLetra").value.trim();
+    const texto = document.getElementById("buscadorTitulo").value.trim();
+    actualizarOpcionesLibros(letra, texto);
+  });
+
+  document.getElementById("buscadorTitulo").addEventListener("input", () => {
+    const letra = document.getElementById("buscadorLetra").value.trim();
+    const texto = document.getElementById("buscadorTitulo").value.trim();
+    actualizarOpcionesLibros(letra, texto);
+  });
+
+  const carrerasPorNivel = {
+    media: ["Enfermería General", "Asistente Educativo", "Radiología", "Diseño Gráfico"],
+    superior: ["Enfermería", "Fisioterapia", "Psicología", "Nutrición", "Ingeniería Civil", "Ingeniería en Agronomía", "Ingeniería Industrial", "Administración de Empresas", "Arquitectura", "Contaduría Pública y Finanzas", "Criminología y Criminalística", "Derecho", "Negocios Internacionales", "Pedagogía", "Seguridad Pública", "Administración Turística", "Trabajo Social"],
+    maestria: ["Docencia", "Juicios Orales", "Geriatría"],
+    doctorado: ["Ciencias de la Educación"]
+  };
+
+  nivelSelect.addEventListener("change", () => {
+    const nivel = nivelSelect.value;
+    carreraSelect.innerHTML = '<option value="">Selecciona tu carrera</option>';
+    if (nivel && carrerasPorNivel[nivel]) {
+      carrerasPorNivel[nivel].forEach(carrera => {
+        const option = document.createElement("option");
+        option.value = carrera;
+        option.textContent = carrera;
+        carreraSelect.appendChild(option);
+      });
+    }
+  });
+
+  function sumarDiasHabiles(fecha, diasHabiles) {
+    let contador = 0;
+    const nuevaFecha = new Date(fecha);
+    while (contador < diasHabiles) {
+      nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+      const dia = nuevaFecha.getDay();
+      if (dia !== 0 && dia !== 6) contador++;
+    }
+    return nuevaFecha.toISOString().split("T")[0];
+  }
+
+  const hoy = new Date();
+  const hoyISO = hoy.toISOString().split("T")[0];
+  prestamoInput.min = hoyISO;
+
+  const unMesDespues = new Date();
+  unMesDespues.setMonth(unMesDespues.getMonth() + 1);
+  prestamoInput.max = unMesDespues.toISOString().split("T")[0];
+
+  prestamoInput.addEventListener("change", () => {
+    if (prestamoInput.value) {
+      const fechaDevolucion = sumarDiasHabiles(prestamoInput.value, 7);
+      devolucionInput.value = fechaDevolucion;
+    }
+  });
+
+  const estadosPosibles = [
+    { estado: "Nuevo", descripcion: "Nuevo" },
+    { estado: "Bueno", descripcion: "Perfecto estado" },
+    { estado: "Regular", descripcion: "Rayones o falta de páginas" },
+    { estado: "Malo", descripcion: "Rayado, páginas faltantes y recortado" }
+  ];
+
+  let estadoSeleccionado = null;
+  let descripcionSeleccionada = null;
+
+  selectTitulo.addEventListener("change", () => {
+    const tituloSeleccionado = selectTitulo.value;
+    const registros = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+    const libroEnUso = registros.find(libro => libro.titulo === tituloSeleccionado);
+
+    if (tituloSeleccionado === "") {
+      estadoLibroDiv.textContent = "";
+      estadoSeleccionado = null;
+      descripcionSeleccionada = null;
+    } else if (libroEnUso) {
+      estadoLibroDiv.textContent = "❌ En uso, selecciona otro libro.";
+      estadoLibroDiv.style.color = "red";
+      estadoSeleccionado = "No disponible";
+      descripcionSeleccionada = "Libro actualmente en uso";
+    } else {
+      const aleatorio = estadosPosibles[Math.floor(Math.random() * estadosPosibles.length)];
+      estadoSeleccionado = aleatorio.estado;
+      descripcionSeleccionada = aleatorio.descripcion;
+      estadoLibroDiv.textContent = `✅ Disponible - Estado: ${estadoSeleccionado}: ${descripcionSeleccionada}`;
+      estadoLibroDiv.style.color = "green";
+    }
+  });
+
+  document.getElementById("formularioPrestamo").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const datos = {
+      nombre: this.nombre.value,
+      nivel: this.nivel.value,
+      carrera: this.carrera.value,
+      prestamo: this.prestamo.value,
+      devolucion: this.devolucion.value,
+      titulo: this.titulo.value,
+      estado: estadoSeleccionado || "Nuevo",
+      descripcionEstado: descripcionSeleccionada || "Nuevo"
+    };
+
+    const registros = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+    registros.push(datos);
+    localStorage.setItem("prestamosLibros", JSON.stringify(registros));
+
+    document.getElementById("mensaje").textContent = `Debes regresar el libro el día ${datos.devolucion}.`;
+    document.getElementById("fechaDevolucionTexto").textContent = `Fecha de devolución: ${datos.devolucion}`;
+    document.getElementById("estadoLibroTexto").textContent = `Estado del libro: ${datos.estado}: ${datos.descripcionEstado}`;
+
+    this.reset();
+    carreraSelect.innerHTML = '<option value="">Selecciona tu carrera</option>';
+    estadoLibroDiv.textContent = "";
+    estadoSeleccionado = null;
+    descripcionSeleccionada = null;
+    document.getElementById("cuadroConfirmacion").style.display = "flex";
+  });
+
+  function cerrarConfirmacion() {
+    document.getElementById("cuadroConfirmacion").style.display = "none";
+  }
+</script>
+
+
+
+
+
+</body>
+</html>

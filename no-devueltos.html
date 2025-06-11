@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Libros No Devueltos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      position: relative;
+    }
+
+    .top-buttons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .top-buttons button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .top-buttons button:hover {
+      background-color: #0056b3;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .libro {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .libro button {
+      margin-top: 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .libro button:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-buttons">
+    <button 
+  onclick="window.location.href='admin-panel.html'" 
+  style="background-color: #dc3545; color: white; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer; margin-right: 10px;"
+>
+  🔙 Regresar
+</button>
+
+<button 
+  onclick="window.location.href='comisiones.html'" 
+  style="background-color: #28a745; color: white; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer;"
+>
+  💸 Ver Comisiones
+</button>
+  </div>
+
+  <h1>📚 Libros No Devueltos</h1>
+  <div id="contenedorLibros"></div>
+
+  <!-- ...encabezado igual que antes -->
+<script>
+  const contenedor = document.getElementById("contenedorLibros");
+  const prestamos = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+
+  if (prestamos.length === 0) {
+    contenedor.innerHTML = "<p>No hay libros pendientes de devolución.</p>";
+  } else {
+    prestamos.forEach((libro, index) => {
+      const div = document.createElement("div");
+      div.className = "libro";
+      div.innerHTML = `
+        <strong>${libro.titulo}</strong><br>
+        Estudiante: ${libro.nombre} <br>
+        Nivel: ${libro.nivel} - ${libro.carrera} <br>
+        Prestado: ${libro.prestamo} <br>
+        Fecha devolución: ${libro.devolucion} <br>
+        Estado del libro: ${libro.estado}: ${libro.descripcionEstado} <br>
+        <button onclick="devolverLibro(${index})">✅ Confirmar Devolución</button>
+        <button onclick="registrarComision(${index})" style="background-color:#dc3545;margin-left:10px;">📤 Registrar para Comisiones</button>
+      `;
+      contenedor.appendChild(div);
+    });
+  }
+
+  function devolverLibro(index) {
+    const prestamos = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+    const devueltos = JSON.parse(localStorage.getItem("librosDevueltos")) || [];
+
+    const libroDevuelto = prestamos.splice(index, 1)[0];
+    devueltos.push(libroDevuelto);
+
+    localStorage.setItem("prestamosLibros", JSON.stringify(prestamos));
+    localStorage.setItem("librosDevueltos", JSON.stringify(devueltos));
+
+    alert("Libro marcado como devuelto.");
+    location.reload();
+  }
+
+  function registrarComision(index) {
+    const prestamos = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+    const libro = prestamos[index];
+
+    const comisiones = JSON.parse(localStorage.getItem("librosConRetraso")) || [];
+
+    // Evitar duplicados por título y nombre del estudiante
+    const yaExiste = comisiones.some(l => l.titulo === libro.titulo && l.nombre === libro.nombre);
+    if (yaExiste) {
+      alert("Este libro ya está registrado para comisiones.");
+      return;
+    }
+
+    comisiones.push(libro);
+    localStorage.setItem("librosConRetraso", JSON.stringify(comisiones));
+    alert("Libro registrado para seguimiento de comisiones.");
+  }
+</script>
+
+
+</body>
+</html>

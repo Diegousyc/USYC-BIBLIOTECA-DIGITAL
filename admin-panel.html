@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Administración</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CORREGIDA: Versión estable de SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background: #f1f1f1;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    h2 { margin: 0; }
+    .btn {
+      padding: 10px 15px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      color: white;
+    }
+    .salir-btn {
+      background-color: #0e61df;
+    }
+    .salir-btn:hover {
+      background-color: #0e61df;
+    }
+    .excel-btn {
+      background-color: #003e46;
+    }
+    .excel-btn:hover {
+      background-color: #003e46;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background-color: #24315e;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead { display: none; }
+      tr {
+        margin-bottom: 15px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        padding: 10px;
+      }
+      td {
+        border: none;
+        padding: 8px 10px;
+        position: relative;
+        text-align: left;
+      }
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h2>Registros de Préstamo</h2>
+    <div>
+      <button class="btn excel-btn" onclick="descargarExcel()">Descargar Excel</button>
+      <button class="btn salir-btn" onclick="window.location.href='index.html'">Salir</button>
+      <button class="btn" style="background-color: #00a210;" onclick="window.location.href='devueltos.html'">Libros Devueltos</button>
+    <button class="btn" style="background-color: #ff0000;" onclick="window.location.href='no-devueltos.html'">Libros No Devueltos</button>
+    <button class="btn" style="background-color: #ffc107; color: black;" onclick="window.location.href='agregar-libro.html'">Agregar Libro</button>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Carrera</th>
+        <th>Nivel</th>
+        <th>Título del libro</th>
+        <th>Préstamo</th>
+        <th>Devolución</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody id="tablaRegistros"></tbody>
+  </table>
+
+  <script>
+    const registros = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+    const tabla = document.getElementById("tablaRegistros");
+
+    if (registros.length === 0) {
+      tabla.innerHTML = "<tr><td colspan='7'>No hay registros disponibles.</td></tr>";
+    } else {
+      registros.forEach(reg => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td data-label="Nombre">${reg.nombre}</td>
+          <td data-label="Carrera">${reg.carrera}</td>
+          <td data-label="Nivel">${reg.nivel}</td>
+          <td data-label="Título del libro">${reg.titulo}</td>
+          <td data-label="Préstamo">${reg.prestamo}</td>
+          <td data-label="Devolución">${reg.devolucion}</td>
+          <td data-label="Estado">${reg.estado}</td>
+        `;
+        tabla.appendChild(fila);
+      });
+    }
+
+    function descargarExcel() {
+      if (registros.length === 0) {
+        alert("No hay registros para exportar.");
+        return;
+      }
+
+      const worksheet = XLSX.utils.json_to_sheet(registros);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Registros");
+
+      XLSX.writeFile(workbook, "registros_prestamos.xlsx");
+    }
+  </script>
+
+</body>
+</html>

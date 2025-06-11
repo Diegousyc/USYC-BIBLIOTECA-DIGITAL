@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Libros Devueltos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .button-container {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 5px 10px;
+      border: none;
+      background-color: #ff0000;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-top: 0;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .no-devuelto-btn {
+      background-color: #dc3545;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .no-devuelto-btn:hover {
+      background-color: #b02a37;
+    }
+    td button {
+      padding: 5px 10px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    td button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Libros Devueltos</h2>
+  <div class="button-container">
+    <button onclick="window.location.href='admin-panel.html'">Regresar</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Título</th>
+        <th>Fecha Devolución</th>
+        <th>Confirmar</th>
+        <th>¿No Devuelto?</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDevueltos"></tbody>
+  </table>
+
+  <script>
+    const prestamos = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+    const devueltos = JSON.parse(localStorage.getItem("librosDevueltos")) || [];
+    const noDevueltos = JSON.parse(localStorage.getItem("librosNoDevueltos")) || [];
+
+    const hoy = new Date();
+    const tbody = document.getElementById("tablaDevueltos");
+
+    prestamos.forEach((reg, index) => {
+      const fechaDev = new Date(reg.devolucion);
+      const esDevuelto = fechaDev <= hoy;
+
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${reg.nombre}</td>
+        <td>${reg.titulo}</td>
+        <td>${reg.devolucion}</td>
+        <td><button onclick="confirmar(${index})">Confirmar</button></td>
+        <td><button class="no-devuelto-btn" onclick="moverNoDevuelto(${index})">No devuelto</button></td>
+      `;
+      tbody.appendChild(fila);
+    });
+
+    function confirmar(index) {
+      const prestamos = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+      const devueltos = JSON.parse(localStorage.getItem("librosDevueltos")) || [];
+
+      const libro = prestamos[index];
+      devueltos.push(libro);
+      prestamos.splice(index, 1);
+
+      localStorage.setItem("librosDevueltos", JSON.stringify(devueltos));
+      localStorage.setItem("prestamosLibros", JSON.stringify(prestamos));
+      alert("Libro marcado como devuelto.");
+      location.reload();
+    }
+
+    function moverNoDevuelto(index) {
+      const prestamos = JSON.parse(localStorage.getItem("prestamosLibros")) || [];
+      const noDevueltos = JSON.parse(localStorage.getItem("librosNoDevueltos")) || [];
+
+      const libro = prestamos[index];
+      noDevueltos.push(libro);
+      prestamos.splice(index, 1);
+
+      localStorage.setItem("librosNoDevueltos", JSON.stringify(noDevueltos));
+      localStorage.setItem("prestamosLibros", JSON.stringify(prestamos));
+      alert("Libro movido a 'No Devueltos'.");
+      location.reload();
+    }
+  </script>
+</body>
+</html>
